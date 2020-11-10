@@ -10,5 +10,6 @@ mv rclone-backup-tool /bin/rclone-backup-tool
 chmod +x /bin/rclone
 chmod +x /bin/rclone-backup-tool
 
+rm -f rclone-v1.53.2-linux-amd64.zip
 rm -rf rclone-v1.53.2-linux-amd64
 rm -rf rclone-backup-tool
