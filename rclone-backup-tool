@@ -1,0 +1,7 @@
+#!/bin/sh
+
+archives=$(find . -maxdepth 1 -not -type d)
+
+for archive in $archives; do
+  rclone sync -v $1/$archive $2
+done
