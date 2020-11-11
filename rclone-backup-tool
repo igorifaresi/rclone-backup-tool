@@ -3,7 +3,7 @@
 echoUsage() {
   echo ""
   echo "Usage:"
-  echo "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE] ['clean'|'']"
+  echo "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE] [clean|]"
   echo ""
   echo "Transfer all files of input folder to output remote in a folder
 with data timestamp at name in a model 'backup_%d-%m-%y'. This is script 
