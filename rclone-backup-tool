@@ -26,22 +26,38 @@ fi
 INPUT_FOLDER=$(echo $1)
 OUTPUT_REMOTE=$(echo $2)
 
+# create new folder on output remote with date timestamp and create 
+# backup log file on a temporary folder
 FOLDER_NAME=$(date +'backup_%d-%m-%y')
 rclone mkdir $OUTPUT_REMOTE:/$FOLDER_NAME
-echo "" > $INPUT_FOLDER/$FOLDER_NAME.log
+mkdir $INPUT_FOLDER/.backup_tmp
+echo "" > $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log
 
+#iterate for each file of folder
 archives=$(find $INPUT_FOLDER -maxdepth 1 -not -type d)
 for archive in $archives; do
+
+  # make a md5 checksum on the file and send then to the output remote
   md5sum $archive > $archive.md5
   rclone sync -v $archive.md5 $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/$FOLDER_NAME.log
   if [ $? -ne 0 ]
   then
     echo "!!! Error in backup file $archive.md5 !!!" >> $INPUT_FOLDER/$FOLDER_NAME.log
   fi
-
+  
+  # clean .md5 if clean parameter is exists
+  [ $3 = "clean" ] && rm -f $archive.md5
+  
+  # send file to output remote
   rclone sync -v $archive $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/$FOLDER_NAME.log
   if [ $? -ne 0 ]
   then
     echo "!!! Error in backup file $archive !!!" >> $INPUT_FOLDER/$FOLDER_NAME.log
   fi
 done
+
+# send backup log file to output remote
+rclone sync -v $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log $OUTPUT_REMOTE:/$FOLDER_NAME/
+
+# clean backup log and his folder if clean paramenter exists
+[ $3 = "clean" ] && rm -rf $INPUT_FOLDER/.backup_tmp
