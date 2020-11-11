@@ -32,7 +32,7 @@ echo "" > $INPUT_FOLDER/$FOLDER_NAME.log
 
 archives=$(find $INPUT_FOLDER -maxdepth 1 -not -type d)
 for archive in $archives; do
-  md5sum $INPUT_FOLDER/$archive > $archive.md5
+  md5sum $INPUT_FOLDER/$archive > $INPUT_FOLDER/$archive.md5
   rclone sync -v $INPUT_FOLDER/$archive.md5 $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/$FOLDER_NAME.log
   if [ $? -ne 0 ]
   then
