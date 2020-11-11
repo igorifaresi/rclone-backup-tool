@@ -27,7 +27,7 @@ FOLDER_NAME=$(date +'backup_%d-%m-%y')
 rclone mkdir $2:/$FOLDER_NAME
 echo "" > $FOLDER_NAME.log
 
-archives=$(find . -maxdepth 1 -not -type d)
+archives=$(find $1 -maxdepth 1 -not -type d)
 for archive in $archives; do
   md5sum $1/$archive > $archive.md5
   rclone sync -v $1/$archive.md5 $2:/$FOLDER_NAME/ &>> $FOLDER_NAME.log
