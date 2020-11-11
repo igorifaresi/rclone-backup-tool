@@ -2,25 +2,33 @@
 
 echoUsage() {
   echo ""
-  echo "Invalid command"
   echo "Usage:"
-  echo "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE]"
+  echo "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE] ['clean'|'']"
   echo ""
   echo "Transfer all files of input folder to output remote in a folder
 with data timestamp at name in a model 'backup_%d-%m-%y'. This is script 
-is not recursive, don't backup folders and folders content."
+is not recursive, don't backup folders and folders content. The clean
+option in third parameter cleans md5 checksum files and temporary folders."
 }
 
 if [ -z "$1" ]
 then
+  echo "Invalid command"
   echoUsage
   exit 1
 fi
 
 if [ -z "$2" ]
 then
+  echo "Invalid command"
   echoUsage
   exit 1
+fi
+
+if [ "$1" = "-h" ]
+then
+  echoUsage
+  exit 0
 fi
 
 INPUT_FOLDER=$(echo $1)
