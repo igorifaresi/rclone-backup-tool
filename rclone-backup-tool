@@ -1,15 +1,14 @@
 #!/bin/sh
 
-USAGE=$(echo "
-  Invalid command
-  Usage:
-    rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE]
-    
-  Transfer all files of input folder to output remote in a         
+USAGE=$(echo ""                                                   \ 
+  "Invalid command"                                               \
+  "Usage:"                                                        \
+  "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE]"           \
+  ""                                                              \
+  "Transfer all files of input folder to output remote in a         
   folder with data timestamp at name in a model 'backup_%d-%m-%y'.
   This is script is not recursive, don't backup folders and 
-  folders content.
-")
+  folders content.")
 
 if [ -z "$1" ]
 then
