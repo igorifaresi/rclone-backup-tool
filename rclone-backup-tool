@@ -43,7 +43,7 @@ mkdir $TMP_FOLDER
 echo "" > $TMP_FOLDER/$FOLDER_NAME.log
 echo "" > $TMP_FOLDER/.buffer
 
-#iterate for each file of folder
+# iterate for each file of folder
 archives=$(find $INPUT_FOLDER -maxdepth 1 -not -type d)
 for archive in $archives; do
   
