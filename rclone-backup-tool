@@ -30,34 +30,49 @@ OUTPUT_REMOTE=$(echo $2)
 # backup log file on a temporary folder
 FOLDER_NAME=$(date +'backup_%d-%m-%y')
 rclone mkdir $OUTPUT_REMOTE:/$FOLDER_NAME
-mkdir $INPUT_FOLDER/.backup_tmp
-echo "" > $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log
+TMP_FOLDER=$INPUT_FOLDER/.backup_tmp
+mkdir $TMP_FOLDER
+echo "" > $TMP_FOLDER/$FOLDER_NAME.log
+echo "" > $TMP_FOLDER/.buffer
 
 #iterate for each file of folder
 archives=$(find $INPUT_FOLDER -maxdepth 1 -not -type d)
 for archive in $archives; do
-
+  
   # make a md5 checksum on the file and send then to the output remote
-  md5sum $archive > $archive.md5 &>> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
-  rclone sync -v $archive.md5 $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
+  md5sum $archive &> $TMP_FOLDER/.buffer
+  cat $TMP_FOLDER/.buffer > $archive.md5
+  cat $TMP_FOLDER/.buffer
+  cat $TMP_FOLDER/.buffer >> $TMP_FOLDER/$FOLDER_NAME.log
+  echo "-> uploading checksum file $archive.md5"
+  rclone sync -v $archive.md5 $OUTPUT_REMOTE:/$FOLDER_NAME/ &> $TMP_FOLDER/.buffer
+  cat $TMP_FOLDER/.buffer
+  cat $TMP_FOLDER/.buffer >> $TMP_FOLDER/$FOLDER_NAME.log
   if [ $? -ne 0 ]
   then
-    echo "!!! Error in backup file $archive.md5 !!!" >> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
+    echo "!!! Error in backup file $archive.md5 !!!" &> $TMP_FOLDER/.buffer 
+    cat $TMP_FOLDER/.buffer
+    cat $TMP_FOLDER/.buffer >> $TMP_FOLDER/$FOLDER_NAME.log
   fi
   
   # clean .md5 if clean parameter is exists
-  [ $3 = "clean" ] && rm -f $archive.md5
+  [ "$3" = "clean" ] && rm -f $archive.md5
   
   # send file to output remote
-  rclone sync -v $archive $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
+  echo "-> uploading $archive"
+  rclone sync -v $archive $OUTPUT_REMOTE:/$FOLDER_NAME/ &> $TMP_FOLDER/.buffer 2> &1
+  cat $TMP_FOLDER/.buffer
+  cat $TMP_FOLDER/.buffer >> $TMP_FOLDER/$FOLDER_NAME.log
   if [ $? -ne 0 ]
   then
-    echo "!!! Error in backup file $archive !!!" >> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
+    echo "!!! Error in backup file $archive !!!" &> $TMP_FOLDER/.buffer
+    cat $TMP_FOLDER/.buffer
+    cat $TMP_FOLDER/.buffer >> $TMP_FOLDER/$FOLDER_NAME.log
   fi
 done
 
 # send backup log file to output remote
-rclone sync -v $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log $OUTPUT_REMOTE:/$FOLDER_NAME/
+rclone sync -v $TMP_FOLDER/$FOLDER_NAME.log $OUTPUT_REMOTE:/$FOLDER_NAME/
 
 # clean backup log and his folder if clean paramenter exists
-[ $3 = "clean" ] && rm -rf $INPUT_FOLDER/.backup_tmp
+[ $3 = "clean" ] && rm -rf $TMP_FOLDER
