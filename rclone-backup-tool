@@ -7,8 +7,8 @@ echoUsage() {
   echo "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE]"
   echo ""
   echo "Transfer all files of input folder to output remote in a folder
-  with data timestamp at name in a model 'backup_%d-%m-%y'. This is script 
-  is not recursive, don't backup folders and folders content."
+with data timestamp at name in a model 'backup_%d-%m-%y'. This is script 
+is not recursive, don't backup folders and folders content."
 }
 
 if [ -z "$1" ]
