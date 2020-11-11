@@ -83,4 +83,4 @@ done
 rclone sync -v $TMP_FOLDER/$FOLDER_NAME.log $OUTPUT_REMOTE:/$FOLDER_NAME/
 
 # clean backup log and his folder if clean paramenter exists
-[ $3 = "clean" ] && rm -rf $TMP_FOLDER
+[ "$3" = "clean" ] && rm -rf $TMP_FOLDER
