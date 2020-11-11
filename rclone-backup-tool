@@ -1,11 +1,11 @@
 #!/bin/sh
 
 USAGE="
-  Invalid command
-  Usage:
-    rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE]
-    
-  Transfer all files of input folder to output remote in a
+  Invalid command                                                  \n
+  Usage:                                                           \n
+    rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE]              \n
+                                                                   \n
+  Transfer all files of input folder to output remote in a         
   folder with data timestamp at name in a model 'backup_%d-%m-%y'.
   This is script is not recursive, don't backup folders and 
   folders content.
