@@ -1,12 +1,12 @@
 #!/bin/bash
 
 echoUsage() {
-	echo ""
-	echo "Invalid command"
-	echo "Usage:"
-	echo "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_FOLDER]"
-	echo ""
-	echo "Transfer all files of input folder to output remote in a folder
+  echo ""
+  echo "Invalid command"
+  echo "Usage:"
+  echo "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_FOLDER]"
+  echo ""
+  echo "Transfer all files of input folder to output remote in a folder
   with data timestamp at name in a model 'backup_%d-%m-%y'. This is script 
   is not recursive, don't backup folders and folders content."
 }
@@ -29,6 +29,8 @@ echo "" > $FOLDER_NAME.log
 
 archives=$(find . -maxdepth 1 -not -type d)
 for archive in $archives; do
+  md5sum $1/$archive > $archive.md5
+  rclone sync -v $1/$archive.md5 '$2:/$FOLDER_NAME/' &>> $FOLDER_NAME.log
   rclone sync -v $1/$archive '$2:/$FOLDER_NAME/' &>> $FOLDER_NAME.log
   if [ $? -ne 0 ]
   then
