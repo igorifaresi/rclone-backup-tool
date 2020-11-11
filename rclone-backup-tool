@@ -4,7 +4,7 @@ echoUsage() {
   echo ""
   echo "Invalid command"
   echo "Usage:"
-  echo "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_FOLDER]"
+  echo "  rclone-backup-tool [INPUT_FOLDER] [OUTPUT_REMOTE]"
   echo ""
   echo "Transfer all files of input folder to output remote in a folder
   with data timestamp at name in a model 'backup_%d-%m-%y'. This is script 
@@ -23,22 +23,25 @@ then
   exit 1
 fi
 
-FOLDER_NAME=$(date +'backup_%d-%m-%y')
-rclone mkdir $2:/$FOLDER_NAME
-echo "" > $FOLDER_NAME.log
+INPUT_FOLDER=$(echo $1)
+OUTPUT_REMOTE=$(echo $2)
 
-archives=$(find $1 -maxdepth 1 -not -type d)
+FOLDER_NAME=$(date +'backup_%d-%m-%y')
+rclone mkdir $OUTPUT_REMOTE:/$FOLDER_NAME
+echo "" > $INPUT_FOLDER/$FOLDER_NAME.log
+
+archives=$(find $INPUT_FOLDER -maxdepth 1 -not -type d)
 for archive in $archives; do
-  md5sum $1/$archive > $archive.md5
-  rclone sync -v $1/$archive.md5 $2:/$FOLDER_NAME/ &>> $FOLDER_NAME.log
+  md5sum $INPUT_FOLDER/$archive > $archive.md5
+  rclone sync -v $INPUT_FOLDER/$archive.md5 $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/$FOLDER_NAME.log
   if [ $? -ne 0 ]
   then
-    echo "!!! Error in backup file $archive.md5 !!!" >> $FOLDER_NAME.log
+    echo "!!! Error in backup file $INPUT_FOLDER/$archive.md5 !!!" >> $INPUT_FOLDER/$FOLDER_NAME.log
   fi
 
-  rclone sync -v $1/$archive $2:/$FOLDER_NAME/ &>> $FOLDER_NAME.log
+  rclone sync -v $INPUT_FOLDER/$archive $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/$FOLDER_NAME.log
   if [ $? -ne 0 ]
   then
-    echo "!!! Error in backup file $archive !!!" >> $FOLDER_NAME.log
+    echo "!!! Error in backup file $INPUT_FOLDER/$archive !!!" >> $INPUT_FOLDER/$FOLDER_NAME.log
   fi
 done
