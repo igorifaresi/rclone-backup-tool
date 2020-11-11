@@ -38,21 +38,21 @@ archives=$(find $INPUT_FOLDER -maxdepth 1 -not -type d)
 for archive in $archives; do
 
   # make a md5 checksum on the file and send then to the output remote
-  md5sum $archive > $archive.md5
-  rclone sync -v $archive.md5 $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/$FOLDER_NAME.log
+  md5sum $archive > $archive.md5 &>> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
+  rclone sync -v $archive.md5 $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
   if [ $? -ne 0 ]
   then
-    echo "!!! Error in backup file $archive.md5 !!!" >> $INPUT_FOLDER/$FOLDER_NAME.log
+    echo "!!! Error in backup file $archive.md5 !!!" >> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
   fi
   
   # clean .md5 if clean parameter is exists
   [ $3 = "clean" ] && rm -f $archive.md5
   
   # send file to output remote
-  rclone sync -v $archive $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/$FOLDER_NAME.log
+  rclone sync -v $archive $OUTPUT_REMOTE:/$FOLDER_NAME/ &>> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
   if [ $? -ne 0 ]
   then
-    echo "!!! Error in backup file $archive !!!" >> $INPUT_FOLDER/$FOLDER_NAME.log
+    echo "!!! Error in backup file $archive !!!" >> $INPUT_FOLDER/.backup_tmp/$FOLDER_NAME.log &>&1
   fi
 done
 
